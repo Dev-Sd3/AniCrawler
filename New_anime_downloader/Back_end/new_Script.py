@@ -86,7 +86,3 @@ def main():
         else:
             print("Error, reffer to log file for details")
 
-
-if __name__ == "__main__":
-    main()
-    logger.info('---- Session terminated ----')
