@@ -104,11 +104,23 @@ class anime:
 #   https://www1.gogoanime.sk/spy-x-family
 #   https://gogoanime.lu/category/kawaii-dake-ja-nai-shikimori-
 
-inp = input("enter link or anime name: ")
+def main():
 
-test = anime(inp)
+    while True:
+        requested = anime(input("Enter anime name or gogoanime URL: "))
+        if requested.valid(): break
+        print("Invalid input")
+    
+        
 
-test.create_file()
+
+
+
+
+if __name__ == "__main__":
+    main()
+    logger.info("session terminated")
+    
 
 
 
