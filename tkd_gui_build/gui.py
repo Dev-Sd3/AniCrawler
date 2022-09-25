@@ -4,192 +4,207 @@
 
 
 from pathlib import Path
-
-# from tkinter import *
-# Explicit imports to satisfy Flake8
+from time import sleep
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
+assets_to_delete = []
+
+def round_rectangle(x1, y1, x2, y2, r=25, **kwargs):
+    points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2,
+              y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
+    return points
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
-
-window = Tk()
-
-window.geometry("1000x620")
-window.configure(bg = "#FFFFFF")
+def delete_assets(canvas, args):
+    for arg in args:
+        canvas.delete(arg)
 
 
-canvas = Canvas(
-    window,
-    bg = "#FFFFFF",
-    height = 620,
-    width = 1000,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge"
-)
+class App():
 
-canvas.place(x = 0, y = 0)
-canvas.create_rectangle(
-    0.0,
-    0.0,
-    1000.0,
-    620.0,
-    fill="#EAABF4",
-    outline="")
+    def __init__(self, window):
 
-button_image_1 = PhotoImage(
-    file=relative_to_assets("button_1.png"))
-button_1 = Button(
-    image=button_image_1,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
-    relief="flat"
-)
-button_1.place(
-    x=22.0,
-    y=202.0,
-    width=240.0,
-    height=60.0
-)
+        window.geometry("990x600")
+        window.configure(bg="#FFFFFF")
 
-button_image_2 = PhotoImage(
-    file=relative_to_assets("button_2.png"))
-button_2 = Button(
-    image=button_image_2,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
-    relief="flat"
-)
-button_2.place(
-    x=22.0,
-    y=428.0,
-    width=240.0,
-    height=60.0
-)
+        canvas = Canvas(
+            window,
+            bg="#FFFFFF",
+            height=620,
+            width=1000,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge"
+        )
 
-button_image_3 = PhotoImage(
-    file=relative_to_assets("button_3.png"))
-button_3 = Button(
-    image=button_image_3,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
-    relief="flat"
-)
-button_3.place(
-    x=22.0,
-    y=317.0,
-    width=240.0,
-    height=60.0
-)
+        canvas.place(x=0, y=0)
 
-canvas.create_rectangle(
-    337.0,
-    81.0,
-    976.0,
-    571.0,
-    fill="#FFFFFF",
-    outline="")
+        self.image_image_1 = PhotoImage(
+            file=relative_to_assets("image_1.png"))
+        image_1 = canvas.create_image(
+            499.0,
+            309.0,
+            image=self.image_image_1
+        )
 
-image_image_1 = PhotoImage(
-    file=relative_to_assets("image_1.png"))
-image_1 = canvas.create_image(
-    525.0,
-    253.0,
-    image=image_image_1
-)
+        canvas.create_line(
+            0,
+            90,
+            140,
+            90,
+            width=4
+        )
 
-entry_image_1 = PhotoImage(
-    file=relative_to_assets("entry_1.png"))
-entry_bg_1 = canvas.create_image(
-    656.5,
-    453.5,
-    image=entry_image_1
-)
-entry_1 = Entry(
-    bd=0,
-    bg="#D9D9D9",
-    highlightthickness=0
-)
-entry_1.place(
-    x=434.5,
-    y=419.0,
-    width=444.0,
-    height=67.0
-)
+        canvas.create_text(
+            1.0,
+            38.0,
+            anchor="nw",
+            text="AniCrawler",
+            fill="#000000",
+            font=("MontserratRoman SemiBold", 40 * -1)
+        )
 
-button_image_4 = PhotoImage(
-    file=relative_to_assets("button_4.png"))
-button_4 = Button(
-    image=button_image_4,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_4 clicked"),
-    relief="flat"
-)
-button_4.place(
-    x=620.0,
-    y=506.0,
-    width=97.0,
-    height=46.0
-)
+        self.button_image_1 = PhotoImage(
+            file=relative_to_assets("button_1.png"))
+        self.button_1 = Button(
+            image=self.button_image_1,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_1 clicked"),
+            relief="flat"
+        )
 
-canvas.create_rectangle(
-    683.0,
-    271.0,
-    913.0,
-    372.0,
-    fill="#FFFFFF",
-    outline="")
+        self.button_1.place(
+            x=0.0,
+            y=189.0,
+            width=209.99281311035156,
+            height=59.0
+        )
 
-canvas.create_rectangle(
-    683.0,
-    271.0,
-    913.0,
-    372.0,
-    fill="#8753B8",
-    outline="")
+        self.button_image_2 = PhotoImage(
+            file=relative_to_assets("button_2.png"))
+        self.button_2 = Button(
+            image=self.button_image_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: delete_assets(self.canvas, assets_to_delete),
+            relief="flat"
+        )
+        self.button_2.place(
+            x=60.0,
+            y=522.0,
+            width=170.0,
+            height=60.0
+        )
 
-canvas.create_text(
-    687.0,
-    277.0,
-    anchor="nw",
-    text="Dont worry about\n the Prinzessin, she\njust works here",
-    fill="#000000",
-    font=("Inter", 23 * -1)
-)
+        self.button_image_4 = PhotoImage(
+            file=relative_to_assets("button_4.png"))
+        self.button_4 = Button(
+            image=self.button_image_4,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_4 clicked"),
+            relief="flat"
+        )
+        self.button_4.place(
+            x=0.0,
+            y=399.0,
+            width=210.0,
+            height=57.0
+        )
 
-canvas.create_text(
-    6.0,
-    38.0,
-    anchor="nw",
-    text="AniCrawler",
-    fill="#000000",
-    font=("Inter", 40 * -1)
-)
+        self.button_image_5 = PhotoImage(
+            file=relative_to_assets("button_5.png"))
+        self.button_5 = Button(
+            image=self.button_image_5,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_5 clicked"),
+            relief="flat"
+        )
+        self.button_5.place(
+            x=0.0,
+            y=291.0,
+            width=210.0,
+            height=57.0
+        )
 
-canvas.create_rectangle(
-    296.5,
-    -2.0,
-    298.5,
-    620.0007934570312,
-    fill="#000000",
-    outline="")
+        self.canvas = canvas
 
-canvas.create_rectangle(
-    -5.0,
-    83.0,
-    155.0,
-    88.0,
-    fill="#000000",
-    outline="")
-window.resizable(False, False)
-window.mainloop()
+
+class Home(App):
+    def __init__(self, window):
+        super().__init__(window)
+
+        Round_Rec = self.canvas.create_polygon(round_rectangle(
+            368.0, 370.0, 952.0, 505.0, 30), fill="#554297", smooth=True)
+
+        self.entry_image_1 = PhotoImage(
+            file=relative_to_assets("entry_1.png"))
+        entry_bg_1 = self.canvas.create_image(
+            675.5,
+            458.0,
+            image=self.entry_image_1
+        )
+
+        entry_1_window = self.canvas.create_window(
+            675.0,
+            458.0,
+            width=473.0,
+            height=58.0
+        )
+        entry_1 = Entry(
+            bd=0,
+            bg="#A589C3",
+            highlightthickness=0
+        )
+        self.canvas.itemconfigure(entry_1_window,window=entry_1)
+
+        Input_Text = self.canvas.create_text(
+            396.0,
+            387.0,
+            anchor="nw",
+            text="Enter link or name here:",
+            fill="#FFFFFF",
+            font=("MontserratRoman SemiBold", 20 * -1)
+        )
+
+        self.image_image_2 = PhotoImage(
+            file=relative_to_assets("image_2.png"))
+        image_2 = self.canvas.create_image(
+            661.0,
+            218.0,
+            image=self.image_image_2
+        )
+
+        self.button_image_3 = PhotoImage(
+            file=relative_to_assets("button_3.png"))
+        self.button_3 = Button(
+            image=self.button_image_3,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_3 clicked"),
+            relief="flat"
+        )
+        button_3_window = self.canvas.create_window(650,550,width=89,height=58)
+        self.canvas.itemconfigure(button_3_window,window=self.button_3)
+
+        assets_to_delete.extend([button_3_window, Round_Rec, image_2, Input_Text,entry_1_window,entry_bg_1])
+
+
+
+def main():
+    window = Tk()
+    app = Home(window)
+    window.resizable(False, False)
+    window.mainloop()
+
+
+if __name__ == "__main__":
+    main()
