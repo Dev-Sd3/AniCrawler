@@ -9,7 +9,7 @@ def Download_Video(Link):
     session = HTMLSession()
     response = session.get(Link)
     try: 
-        response.html.render(wait=2,sleep=4)
+        response.html.render(retries=2,wait=4,sleep=4,timeout=15)
     except:
         return False
     print(response.html.absolute_links)

@@ -99,22 +99,15 @@ class anime:
         Download_links = self.generate_dlinks()
         with open(f"{self.name}_Links.txt", "w+") as f:
             for i in range(0, len(Download_links)):
-                f.write(f"Episode {i+1} : {Download_links[i]}\n")
-
-#   https://www1.gogoanime.sk/spy-x-family
-#   https://gogoanime.lu/category/kawaii-dake-ja-nai-shikimori-
+                f.write(f"{Download_links[i]}")
+                if i != len(Download_links)-1:
+                    f.write(",\n")
 
 def main():
-
-    while True:
-        requested = anime(input("Enter anime name or gogoanime URL: "))
-        if requested.valid(): break
-        print("Invalid input")
     
-        
-
-
-
+    requested = anime(input("Enter anime name or gogoanime URL: "))
+    if requested.valid():
+        requested.create_file()
 
 
 if __name__ == "__main__":
