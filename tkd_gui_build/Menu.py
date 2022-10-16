@@ -1,26 +1,6 @@
-from pathlib import Path
-from time import sleep
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
-
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path("./assets")
-
-assets_to_delete = []
-
-def round_rectangle(x1, y1, x2, y2, r=25, **kwargs):
-    points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2,
-              y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
-    return points
-
-def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
-
-def delete_assets(canvas, args):
-    for arg in args:
-        canvas.delete(arg)
-
-
+from Functions import *
+from Entry_Window import Home
+from Acquired import Entry_Menu
 
 class App():
 
@@ -88,6 +68,15 @@ class App():
             width=4
         )
 
+        # global Title_text
+        # Title_text = canvas.create_text(
+        #     1.0,
+        #     38.0,
+        #     anchor="nw",
+        #     text="AniCrawler",
+        #     fill="#000000",
+        #     font=("MontserratRoman SemiBold", 40 * -1)
+        # )
         canvas.create_text(
             1.0,
             38.0,
@@ -103,7 +92,7 @@ class App():
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: Home(canvas),
             relief="flat"
         )
 
@@ -120,7 +109,7 @@ class App():
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: delete_assets(self.canvas, assets_to_delete),
+            command=lambda: delete_assets(canvas, assets_to_delete),
             relief="flat"
         )
         self.button_2.place(
@@ -152,7 +141,7 @@ class App():
             image=self.button_image_5,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_5 clicked"),
+            command=lambda: Entry_Menu(canvas),
             relief="flat"
         )
         self.button_5.place(
@@ -162,4 +151,8 @@ class App():
             height=57.0
         )
 
+        Home(canvas)
+
         self.canvas = canvas
+    
+    
