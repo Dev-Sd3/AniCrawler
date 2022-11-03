@@ -1,6 +1,38 @@
-from Functions import *
-from Entry_Window import Home
-from Acquired import Entry_Menu
+import GUI.Entry_Window as EW
+from GUI.Acquired import *
+import sys
+import os
+import subprocess
+
+
+def open_file(filename):
+    if sys.platform == "win32":
+        os.startfile(filename)
+    else:
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, filename])
+
+
+def SwitchToAcquired(canvas):
+    try:
+        if EW.AnimeReq.getName() != "":
+            Entry_Menu(canvas)
+        else:
+            messagebox.showinfo("Invalid", "No valid link given!")
+    except:
+        messagebox.showinfo("Invalid", "No valid link given!")
+
+
+def SwitchToCustom(canvas):
+    messagebox.showinfo("Coming soon", "Not a feature yet!")
+
+
+def ResetButton(canvas, assets_to_delete):
+    delete_assets(canvas, assets_to_delete)
+    EW.Home(canvas)
+    EW.AnimeReq = EW.anime
+    app.logger.info("Reset!")
+
 
 class App():
 
@@ -34,7 +66,7 @@ class App():
             image=self.log_image,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: open_file("logs.log"),
             relief="flat"
         )
         button_log.place(
@@ -50,7 +82,7 @@ class App():
             image=self.button_info,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_2 clicked"),
+            command=lambda: open_file("README.md"),
             relief="flat"
         )
         button_2.place(
@@ -68,15 +100,6 @@ class App():
             width=4
         )
 
-        # global Title_text
-        # Title_text = canvas.create_text(
-        #     1.0,
-        #     38.0,
-        #     anchor="nw",
-        #     text="AniCrawler",
-        #     fill="#000000",
-        #     font=("MontserratRoman SemiBold", 40 * -1)
-        # )
         canvas.create_text(
             1.0,
             38.0,
@@ -92,7 +115,7 @@ class App():
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: Home(canvas),
+            command=lambda: EW.Home(canvas),
             relief="flat"
         )
 
@@ -109,7 +132,7 @@ class App():
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: delete_assets(canvas, assets_to_delete),
+            command=lambda: ResetButton(canvas, assets_to_delete),
             relief="flat"
         )
         self.button_2.place(
@@ -125,7 +148,7 @@ class App():
             image=self.button_image_4,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_4 clicked"),
+            command=lambda: SwitchToCustom(canvas),
             relief="flat"
         )
         self.button_4.place(
@@ -141,7 +164,7 @@ class App():
             image=self.button_image_5,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: Entry_Menu(canvas),
+            command=lambda: SwitchToAcquired(canvas),
             relief="flat"
         )
         self.button_5.place(
@@ -151,8 +174,6 @@ class App():
             height=57.0
         )
 
-        Home(canvas)
+        EW.Home(canvas)
 
         self.canvas = canvas
-    
-    

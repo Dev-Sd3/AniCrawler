@@ -1,9 +1,140 @@
-from Functions import *
+from GUI.Functions import *
+from Backend.Downloader import Download_Video
+import webbrowser
+import app
+
+
+Episodes_Requested = [""]
+Quality_Requested = "480"
+
+
+def Set480p():
+    global Quality_Requested
+    Quality_Requested = "480"
+    app.logger.info(f"Set quality to {Quality_Requested}")
+
+
+def Set360p():
+    global Quality_Requested
+    Quality_Requested = "360"
+    app.logger.info(f"Set quality to {Quality_Requested}")
+
+
+def Set1080p():
+    global Quality_Requested
+    Quality_Requested = "1080"
+    app.logger.info(f"Set quality to {Quality_Requested}")
+
+
+def Set720p():
+    global Quality_Requested
+    Quality_Requested = "720"
+    app.logger.info(f"Set quality to {Quality_Requested}")
+
+
+def SetEpisodesMultiple(entry_2, entry_3):
+    try:
+        if entry_2 == 0 or entry_3 == 0:
+            messagebox.showerror(title="Invalid Entry",
+                                 message="Invalid entry")
+            return
+        else:
+            start = int(entry_2.get())
+            end = int(entry_3.get())
+    except:
+        app.logger.warning("Invalid entry in Episode window")
+        messagebox.showerror(title="Invalid Entry", message="Invalid entry")
+        return
+    global Episodes_Requested
+    Episodes_Requested = []
+
+    if end < start:
+        start, end = end, start
+    if start == end:
+        Episodes_Requested = [start]
+    else:
+        for i in range(start, end+1):
+            Episodes_Requested.append(i)
+
+    app.logger.info(
+        f"Set Episodes from {start} to {end} with quality {Quality_Requested}")
+
+
+def SetEpisodesSingle(entry_1):
+    try:
+        start = int(entry_1.get())
+        if start == 0:
+            messagebox.showerror(title="Invalid Entry",
+                                 message="Invalid entry")
+        else:
+            global Episodes_Requested
+            Episodes_Requested = [start]
+            app.logger.info(
+                f"Episode {start} with quality {Quality_Requested}")
+    except:
+        app.logger.warning("Invalid entry in Episode window")
+        messagebox.showerror(title="Invalid Entry",
+                             message="Enter only digits")
+
+
+def SetEpisodesAll():
+    global Episodes_Requested
+    Episodes_Requested = []
+    for i in range(1, 100):
+        Episodes_Requested.append(i)
+    app.logger.info(f"Episode MAX with quality {Quality_Requested}")
+
+
+def Download_Button():
+    if (Episodes_Requested == [""]):
+        app.logger.warning("No episodes to Download")
+        messagebox.showerror(title="No episodes Selected",
+                             message="No episodes selected, Make sure to enter a value and press the button")
+    else:
+        Downloaded = []
+        from GUI.Entry_Window import AnimeReq
+
+        Links = AnimeReq.generate_dlinks(Episodes_Requested)
+        for link in Links:
+            reply = Download_Video(link, Quality_Requested)
+            if reply == 0:
+                Downloaded.append(link[-2:].replace("+", ""))
+            elif reply == -2:
+                messagebox.showerror(
+                    "Error", "One or more episode already exists!")
+            else:
+                messagebox.showerror(
+                    "Error", "An Error occured, most likely a connection error")
+                break
+
+        if Downloaded != []:
+            messagebox.showinfo(title="Downloaded",
+                            message=f"Downloaded {Downloaded}")
+
+
+def Open_Button():
+    if (Episodes_Requested == [""]):
+        app.logger.warning("No episodes to Download")
+        messagebox.showerror(title="No episodes Selected",
+                             message="No episodes selected, Make sure to enter a value and press the button")
+    else:
+
+        from GUI.Entry_Window import AnimeReq
+        for link in AnimeReq.generate_dlinks(Episodes_Requested):
+            webbrowser.open(link)
 
 
 def Entry_Menu(canvas):
 
     delete_assets(canvas, assets_to_delete)
+
+    global AllSetImage
+    AllSetImage = PhotoImage(file=relative_to_assets("Allset.png"))
+    Allset = canvas.create_image(
+        500.0,
+        85.0,
+        image=AllSetImage
+    )
 
     text1 = canvas.create_text(
         551.0,
@@ -13,7 +144,7 @@ def Entry_Menu(canvas):
         fill="#000000",
         font=("MontserratRoman SemiBold", 48 * -1)
     )
-    canvas.itemconfigure(text1,text="Acquired !")
+    canvas.itemconfigure(text1, text="Acquired !")
 
     text2 = canvas.create_text(
         304.0,
@@ -31,7 +162,7 @@ def Entry_Menu(canvas):
         image=button_image_3,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("download clicked"),
+        command=lambda: Download_Button(),
         relief="flat"
     )
     download_window = canvas.create_window(
@@ -49,7 +180,7 @@ def Entry_Menu(canvas):
         image=button_image_4,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("open clicked"),
+        command=lambda: Open_Button(),
         relief="flat"
     )
     open_window = canvas.create_window(
@@ -83,7 +214,7 @@ def Entry_Menu(canvas):
         image=button_image_5,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("ALL clicked"),
+        command=lambda: SetEpisodesAll(),
         relief="flat"
     )
     ALL_window = canvas.create_window(
@@ -101,7 +232,7 @@ def Entry_Menu(canvas):
         image=button_image_6,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("Fromto clicked"),
+        command=lambda: SetEpisodesMultiple(entry_2, entry_3),
         relief="flat"
     )
     Fromto_window = canvas.create_window(
@@ -119,7 +250,7 @@ def Entry_Menu(canvas):
         image=button_image_7,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("oneep clicked"),
+        command=lambda: SetEpisodesSingle(entry_1),
         relief="flat"
     )
     oneep_window = canvas.create_window(
@@ -130,15 +261,7 @@ def Entry_Menu(canvas):
     )
     canvas.itemconfigure(oneep_window, window=oneep)
 
-
-    # global entry_image_1
-    # entry_image_1 = PhotoImage(
-    #     file=relative_to_assets("entry_10.png"))
-    # entry_bg_1 = canvas.create_image(
-    #     594.0,
-    #     288.0,
-    #     image=entry_image_1
-    # )
+# ONE EP
     entry_1 = Entry(
         bd=0,
         bg="#8754B8",
@@ -152,15 +275,6 @@ def Entry_Menu(canvas):
     )
     canvas.itemconfigure(entry_1_window, window=entry_1)
 
-    # global entry_image_2
-    # entry_image_2 = PhotoImage(
-    #     file=relative_to_assets("entry_20.png"))
-    # entry_bg_2 = canvas.create_image(
-    #     750.0,
-    #     295.0,
-    #     image=entry_image_2
-    # )
-    #bg = #AA93CB
     entry_2 = Entry(
         bd=0,
         bg="#8754B8",
@@ -174,15 +288,6 @@ def Entry_Menu(canvas):
     )
     canvas.itemconfigure(entry_2_window, window=entry_2)
 
-
-    global entry_image_3
-    # entry_image_3 = PhotoImage(
-    #     file=relative_to_assets("entry_30.png"))
-    # entry_bg_3 = canvas.create_image(
-    #     75z.0,
-    #     294.0,
-    #     image=entry_image_3
-    # )
     entry_3 = Entry(
         bd=0,
         bg="#8754B8",
@@ -195,9 +300,6 @@ def Entry_Menu(canvas):
         height=32.0
     )
     canvas.itemconfigure(entry_3_window, window=entry_3)
-
-
-
 
     text3 = canvas.create_text(
         304.0,
@@ -215,7 +317,7 @@ def Entry_Menu(canvas):
         image=button_image_8,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("image360p clicked"),
+        command=lambda: Set360p(),
         relief="flat"
     )
     image360p_window = canvas.create_window(
@@ -233,7 +335,7 @@ def Entry_Menu(canvas):
         image=button_image_9,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("image1080p clicked"),
+        command=lambda: Set1080p(),
         relief="flat"
     )
     image1080p_window = canvas.create_window(
@@ -251,7 +353,7 @@ def Entry_Menu(canvas):
         image=button_image_10,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("image720p clicked"),
+        command=lambda: Set720p(),
         relief="flat"
     )
     image720p_window = canvas.create_window(
@@ -269,7 +371,7 @@ def Entry_Menu(canvas):
         image=button_image_11,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("image480p clicked"),
+        command=lambda: Set480p(),
         relief="flat"
     )
     image480p_window = canvas.create_window(
@@ -280,8 +382,6 @@ def Entry_Menu(canvas):
     )
     canvas.itemconfigure(image480p_window, window=image480p)
 
-    assets_to_delete.extend([text1, text2, text3, line1, line2, download_window, entry_1_window,entry_2_window,entry_3_window,
+    assets_to_delete.extend([text1, text2, text3, line1, line2, download_window, entry_1_window, entry_2_window, entry_3_window,
                              open_window, ALL_window, Fromto_window, oneep_window, image360p_window, image1080p_window,
-                             image720p_window, image480p_window])
-
-
+                             image720p_window, image480p_window, Allset])

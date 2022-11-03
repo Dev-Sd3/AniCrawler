@@ -1,7 +1,6 @@
 from pathlib import Path
-from time import sleep
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-from tkinter import ttk
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
+
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -22,14 +21,3 @@ def relative_to_assets(path: str) -> Path:
 def delete_assets(canvas, args):
     for arg in args:
         canvas.delete(arg)
-
-
-def TitleText(canvas):
-    canvas.create_text(
-        1.0,
-        38.0,
-        anchor="nw",
-        text="AniCrawler",
-        fill="#000000",
-        font=("MontserratRoman SemiBold", 40 * -1)
-    )

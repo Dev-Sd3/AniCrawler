@@ -1,20 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-import logging
+from app import logger
 
 header = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
     'referer': 'https://www.google.com/'
 }
-
-file_handler = logging.FileHandler('logs.log')
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s %(message)s'))
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(file_handler)
-logger.info('---- New session initiated ----')
 
 
 def get_name(link):
@@ -51,25 +43,40 @@ class anime:
             self.name = text
             self.link = get_link(text)
 
+    def getLink(self):
+        return self.link
+    def getName(self):
+        return self.name
+    def setLink(self,newlink):
+        self.link = newlink
+    def setName(self,newname):
+        self.name = newname
+
+
+
     def valid(self):
-        link = self.link.split("/")
-        link[-1] = "category/"+link[-1]
-        link = '/'.join(link)
-        html = BeautifulSoup(requests.get(link, headers=header).content, "html.parser")
-        if "gogoanime" not in self.link or "Error 404" in str(html):
-            logger.error('invalid link')
+        try:
+            link = self.link.split("/")
+            link[-1] = "category/"+link[-1]
+            link = '/'.join(link)
+            html = BeautifulSoup(requests.get(link, headers=header).content, "html.parser")
+            if "gogoanime" not in self.link or "Error 404" in str(html):
+                logger.error('invalid link')
+                return False
+            else: return True
+        except:
+            logger.error("Connection Error")
             return False
-        else: return True
     
-    def generate_links(self,number=500):
+    def generate_links(self, Episodes_Requested):
         Episode_links = []
-        for i in range(1,number+1):
+        for i in Episodes_Requested:
             Episode_links.append(self.link+"-episode-"+str(i))
         return Episode_links
 
-    def generate_dlinks(self):
+    def generate_dlinks(self,Episodes_Requested):
         Download_links = []
-        Episode_links = self.generate_links()
+        Episode_links = self.generate_links(Episodes_Requested)
 
         if self.valid():
             for link in Episode_links:
@@ -104,15 +111,12 @@ class anime:
                     f.write(",\n")
 
 def main():
-    
     requested = anime(input("Enter anime name or gogoanime URL: "))
     if requested.valid():
         requested.create_file()
 
 
-if __name__ == "__main__":
-    main()
-    logger.info("session terminated")
+    
     
 
 
