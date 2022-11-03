@@ -8,5 +8,5 @@ Some features are still works in progress but the general functionality should w
 
 Make sure to download requirements using pip install -r requirements.txt !
 
-Enjoy <3
+Run app.py & Enjoy <3
 

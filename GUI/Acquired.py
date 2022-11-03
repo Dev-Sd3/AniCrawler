@@ -150,7 +150,7 @@ def Entry_Menu(canvas):
         304.0,
         180.0,
         anchor="nw",
-        text="Software found X episodes, select range desired:",
+        text="Software found requested episodes, select range desired:",
         fill="#000000",
         font=("MontserratRoman SemiBold", 24 * -1)
     )
